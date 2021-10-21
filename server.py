@@ -1,17 +1,20 @@
-# Copyright (c) 2021 Johannes Thorén
-# 
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from flask import Flask
+from flask_pymongo import PyMongo
+from werkzeug.datastructures import *
 
-from flask import jsonify, Flask
+import toml
+
+import routes_thread_posts
+import routes_user
+import routes_threads
+
+settings = toml.load("settings.toml")
 
 app = Flask(__name__)
-
-@app.route('/api')
-def api_main():
-      return "api"
+app.register_blueprint(routes_user.app)
+app.register_blueprint(routes_thread_posts.app)
+app.register_blueprint(routes_threads.app)
 
 
 if __name__ == "__main__":
-      app.run(host='localhost', port=8001)
+      app.run(host="0.0.0.0", port=3500)
