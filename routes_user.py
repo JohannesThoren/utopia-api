@@ -1,35 +1,35 @@
-from flask import Flask, blueprints
+import re
+from flask import Flask, blueprints, request
 from flask_pymongo import PyMongo
 
-import db_user, db_threads, db_thread_posts
-import toml
+import db, db_user, db_threads, db_thread_posts
 
-settings = toml.load("settings.toml")
+api_user = blueprints.Blueprint("api_user", __name__)
 
-app = blueprints.Blueprint("api_user", __name__)
-app.config["MONGO_URI"] = settings["settings"]["database-url"]
-mongo = PyMongo(app)
-
-@app.route('/user/auth')
+@api_user.route('/user/auth')
 def authenticate():
       return 
 
-@app.route('/user/new')
-def user_new():
-      return
 
-@app.route('/user/edit')
+@api_user.route('/user/new')
+def user_new():
+      body = request.json
+      if db_user.create_user(db.mongo, body["username"],body["password"],body["email"]):
+            return {"response code": 200, "username": body["username"]}
+      else:
+            return {"response code": 403}
+@api_user.route('/user/edit')
 def user_edit():
       return
 
-@app.route('/user/delete')
+@api_user.route('/user/delete')
 def user_delet():
       return
 
-@app.route('/<username>/get')
+@api_user.route('/<username>/get')
 def user_get_by_name(username):
       return
 
-@app.route('/<user_id>/get')
+@api_user.route('/<user_id>/get')
 def user_get_by_id(user_id):
       return
