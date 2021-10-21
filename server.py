@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_file
 from flask_pymongo import PyMongo
 from werkzeug.datastructures import *
 
@@ -19,6 +19,10 @@ mongo.init_app(app)
 app.register_blueprint(api_user)
 app.register_blueprint(api_thread_posts)
 app.register_blueprint(api_threads)
+
+@app.route("/profile_picture")
+def profilepic():
+      return send_file("assets/profile.png", mimetype='image/gif')      
 
 if __name__ == "__main__":
       app.run(host="0.0.0.0", port=3500)
