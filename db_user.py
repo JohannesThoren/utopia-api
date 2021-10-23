@@ -67,3 +67,12 @@ def get_user_by_token(mongo, token):
         return {"response code": 200, "username": user["username"], "id": user["id"], "profile_picture": user["image"]}
     else:
         return {"response code": 404}
+
+def auth_user(mongo, token):
+    db = mongo.db.users
+    token = UUID(token)
+    user = db.find_one({"token": token})
+    if user:
+        return user["id"], user["username"]
+    else:
+        return False
