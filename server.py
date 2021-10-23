@@ -17,8 +17,8 @@ app.config["MONGO_URI"] = settings["settings"]["database-url"]
 mongo.init_app(app)
 
 app.register_blueprint(api_user)
-app.register_blueprint(api_thread_posts)
 app.register_blueprint(api_threads)
+app.register_blueprint(api_thread_posts)
 
 @app.route("/profile_picture")
 def profilepic():

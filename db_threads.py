@@ -24,7 +24,7 @@ def get_specific_thread_by_id(mongo, id):
       db = mongo.db.threads
       thread = db.find_one({"id": UUID(id)})
       if thread:
-            return {"response code": 200,"name": thread["name"],"id": thread["id"], "description": thread["description"], "author": thread["author"], "created": thread["created"]}
+            return {"response code": 200,"name": thread["name"],"id": thread["id"], "description": thread["description"], "owner": thread["owner"], "created": thread["created"]}
       else:
             return {"response code": 404}
 
@@ -32,7 +32,7 @@ def get_specific_thread_by_name(mongo, name):
       db = mongo.db.threads
       thread = db.find_one({"name": name})
       if thread:
-            return {"response code": 200,"name": thread["name"],"id": thread["id"], "description": thread["description"], "author": thread["author"], "created": thread["created"]}
+            return {"response code": 200,"name": thread["name"],"id": thread["id"], "description": thread["description"], "owner": thread["owner"], "created": thread["created"]}
       else:
             return {"response code": 404}
           
@@ -40,11 +40,11 @@ def get_specific_thread_by_name(mongo, name):
 def create_thread(mongo, name, description, token):
       db = mongo.db.threads
 
-      author_id, author_username = db_user.auth_user(mongo, token)
+      owner_id, owner_username = db_user.auth_user(mongo, token)
 
-      if author_id:
+      if owner_id:
             if not db.find_one({"name": name}):
-                  thread = {"id":uuid4(),"name": name, "description": description, "author": author_id, "created": datetime.now()}
+                  thread = {"id":uuid4(),"name": name, "description": description, "owner": owner_id, "created": datetime.now()}
                   db.insert(thread)
                   return {"response code": 200}
             else:
@@ -56,11 +56,13 @@ def create_thread(mongo, name, description, token):
 def delete_thread(mongo, id, token):
       db = mongo.db.threads
       thread = db.find_one({"id": UUID(id)})
-      author_id, author_username = db_user.auth_user(mongo, token)
+      owner_id, owner_username = db_user.auth_user(mongo, token)
       
       if thread:
-            if thread["author"] == author_id:
+            if thread["owner"] == owner_id:
                   db.delete_one(thread)
                   return {"response code": 200, "msg": "thread deleted"}
+            else:
+                  return {"response code": 403}
       else:
             return {"response code": 404, "msg": "could not find any threads with that id!"}
