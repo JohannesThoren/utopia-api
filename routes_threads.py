@@ -23,12 +23,11 @@ def thread_new():
       body = request.json
       return db_threads.create_thread(db.mongo, body["name"], body["description"], body["token"])
 
-@api_threads.route('/thread/<thread_id>/edit')
+@api_threads.route('/thread/edit/<thread_id>')
 def thread_specific_modify(thread_id):
       return
 
-@api_threads.route('/thread/<thread_id>/delete')      
+@api_threads.route('/thread/delete/<thread_id>')      
 def thread_specific_delete(thread_id):
       body = request.json
-      
-      return
+      return db_threads.delete_thread(db.mongo, thread_id, body["token"])

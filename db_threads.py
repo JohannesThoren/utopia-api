@@ -51,3 +51,16 @@ def create_thread(mongo, name, description, token):
                   return {"response code": 401}
       else:
             return {"response code": 403}
+
+
+def delete_thread(mongo, id, token):
+      db = mongo.db.threads
+      thread = db.find_one({"id": UUID(id)})
+      author_id, author_username = db_user.auth_user(mongo, token)
+      
+      if thread:
+            if thread["author"] == author_id:
+                  db.delete_one(thread)
+                  return {"response code": 200, "msg": "thread deleted"}
+      else:
+            return {"response code": 404, "msg": "could not find any threads with that id!"}
