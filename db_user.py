@@ -51,7 +51,7 @@ def get_user_by_name(mongo, username):
 
 def get_user_by_id(mongo, id):
     db = mongo.db.users
-    user = db.find_one({"id": id})
+    user = db.find_one({"id": UUID(id)})
     if user:
         return {"response code": 200, "username": user["username"], "id": user["id"], "profile_picture": user["image"]}
     else:
