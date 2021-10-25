@@ -44,7 +44,7 @@ def get_user_by_name(mongo, username):
     db = mongo.db.users
     user = db.find_one({"username": username})
     if user:
-        return {"response code": 200, "username": user["username"], "id": user["user_id"], "profile_picture": user["image"]}
+        return {"response code": 200, "username": user["username"], "id": user["id"], "profile_picture": user["image"]}
     else:
         return {"response code": 404}
 
@@ -53,7 +53,7 @@ def get_user_by_id(mongo, id):
     db = mongo.db.users
     user = db.find_one({"id": id})
     if user:
-        return {"response code": 200, "username": user["username"], "id": user["user_id"], "profile_picture": user["image"]}
+        return {"response code": 200, "username": user["username"], "id": user["id"], "profile_picture": user["image"]}
     else:
         return {"response code": 404}
 
