@@ -5,10 +5,14 @@ import db, db_user, db_threads, db_thread_posts
 
 api_threads = blueprints.Blueprint("api_threads", __name__)
 
+# TODO All routess that should be a post request, should have all data in the body
+
+
 @api_threads.route('/threads/get/all')
 def threads_all():
       return db_threads.get_all_threads(db.mongo)
 
+# TODO this should be a post request
 @api_threads.route('/thread/new')
 def thread_new():
       body = request.json
@@ -27,6 +31,7 @@ def thread_get_specific_by_name(thread_name):
 def thread_specific_modify(thread_id):
       return
 
+# TODO this should be a post request
 @api_threads.route('/thread/<thread_id>/delete/')      
 def thread_specific_delete(thread_id):
       body = request.json

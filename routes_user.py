@@ -9,25 +9,28 @@ import db_thread_posts
 
 api_user = blueprints.Blueprint("api_user", __name__)
 
+# TODO All routess that should be a post request, should have all data in the body
 
+
+# TODO this should be a post request
 @api_user.route('/user/get/token')
 def authenticate():
     body = request.json
     return db_user.get_token(db.mongo, body["username"], body["password"])
 
-
+# TODO this should be a post request
 @api_user.route('/user/new')
 def user_new():
     body = request.json
     return db_user.create_user(db.mongo, body["username"], body["password"], body["email"])
 
-
+# TODO this should be a post request
 @api_user.route('/user/edit')
 def user_edit():
     body = request.json
     return body
 
-
+# TODO this should be a post request
 @api_user.route('/user/delete')
 def user_delete():
     body = request.json
