@@ -1,6 +1,7 @@
-import re
 from flask import Flask, blueprints, request
 from flask_pymongo import PyMongo
+
+import json
 
 import db
 import db_user
@@ -12,28 +13,24 @@ api_user = blueprints.Blueprint("api_user", __name__)
 # TODO All routess that should be a post request, should have all data in the body
 
 
-# TODO this should be a post request
-@api_user.route('/user/get/token')
+@api_user.route('/user/auth',methods=['POST'])
 def authenticate():
-    body = request.json
+    body = json.loads(request.get_data().decode("UTF-8"))
     return db_user.get_token(db.mongo, body["username"], body["password"])
 
-# TODO this should be a post request
-@api_user.route('/user/new')
+@api_user.route('/user/new',methods=['POST'])
 def user_new():
-    body = request.json
+    body = json.loads(request.get_data().decode("UTF-8"))
     return db_user.create_user(db.mongo, body["username"], body["password"], body["email"])
 
-# TODO this should be a post request
-@api_user.route('/user/edit')
+@api_user.route('/user/edit',methods=['POST'])
 def user_edit():
-    body = request.json
+    body = json.loads(request.get_data().decode("UTF-8"))
     return body
 
-# TODO this should be a post request
-@api_user.route('/user/delete')
+@api_user.route('/user/delete',methods=['POST'])
 def user_delete():
-    body = request.json
+    body = json.loads(request.get_data().decode("UTF-8"))
     return db_user.delete_user(db.mongo, body["token"])
 
 

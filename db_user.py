@@ -12,11 +12,13 @@ settings = toml.load("settings.toml")
 def get_token(mongo, username, password):
     db = mongo.db.users
     user = db.find_one({"username": username})
-
-    if bcrypt.checkpw(password.encode("UTF-8"), user["password"]):
-        return {"response code": 200, "token": user["token"]}
+    if user:
+        if bcrypt.checkpw(password.encode("UTF-8"), user["password"]):
+            return {"response code": 200, "token": user["token"]}
+        else:
+            return {"response code": 401}
     else:
-        return {"response code": 401}
+        return {"response code": 404}
 
 
 def create_user(mongo, username, password, email, image=str(settings["settings"]["url"]+"/profile_picture")):
@@ -59,7 +61,6 @@ def get_user_by_id(mongo, id):
 
 
 def get_user_by_token(mongo, token):
-    print(token)
     db = mongo.db.users
     token = UUID(token)
     user = db.find_one({"token": token})
