@@ -9,11 +9,11 @@ from datetime import datetime
 import db_user
 
 from response_codes import Codes
-def new_post(mongo, thread_id, token, content, title):
+def new_post(mongo, board_id, token, content, title):
       db = mongo.db.posts
       if db_user.auth_user(mongo, token):
             user_id, username = db_user.auth_user(mongo, token)
-            new_post = {"title": title, "content": content, "thread": UUID(thread_id), "created": datetime.now(), "author": user_id, "id": uuid4()}
+            new_post = {"title": title, "content": content, "board": UUID(board_id), "created": datetime.now(), "author": user_id, "id": uuid4()}
             db.insert(new_post)
             return {"response code": Codes.ok, "msg": "post created"}
       else:
@@ -23,14 +23,14 @@ def get_specific_post(mongo, post_id):
       db = mongo.db.posts
       post = db.find_one({"id": UUID(post_id)})
       if post:
-            return {"id": post["id"], "title": post["title"], "author": post["author"], "thread": post["thread"], "created": post["created"],"content": post["content"], "response code": Codes.ok}
+            return {"id": post["id"], "title": post["title"], "author": post["author"], "board": post["board"], "created": post["created"],"content": post["content"], "response code": Codes.ok}
       else:
             return {"response code": Codes.not_found}
 
 
-def get_all_posts(mongo, thread_id):
+def get_all_posts(mongo, board_id):
       db = mongo.db.posts
-      posts = db.find({"thread": UUID(thread_id)})
+      posts = db.find({"board": UUID(board_id)})
       post_dict = {}
       index = 0
 

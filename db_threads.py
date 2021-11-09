@@ -10,42 +10,42 @@ from uuid import uuid4, UUID
 from datetime import datetime
 
 
-def get_all_threads(mongo):
-      db = mongo.db.threads
-      threads = {}
+def get_all_boards(mongo):
+      db = mongo.db.boards
+      boards = {}
       index = 0
-      for thread in db.find({}):
-            threads.update({f"{index}": {"id": thread["id"], "name": thread["name"]}})
+      for board in db.find({}):
+            boards.update({f"{index}": {"id": board["id"], "name": board["name"]}})
             index += 1
 
-      return threads
+      return boards
 
-def get_specific_thread_by_id(mongo, id):
-      db = mongo.db.threads
-      thread = db.find_one({"id": UUID(id)})
-      if thread:
-            return {"response code": 200,"name": thread["name"],"id": thread["id"], "description": thread["description"], "owner": thread["owner"], "created": thread["created"]}
+def get_specific_board_by_id(mongo, id):
+      db = mongo.db.boards
+      board = db.find_one({"id": UUID(id)})
+      if board:
+            return {"response code": 200,"name": board["name"],"id": board["id"], "description": board["description"], "owner": board["owner"], "created": board["created"]}
       else:
             return {"response code": 404}
 
-def get_specific_thread_by_name(mongo, name):
-      db = mongo.db.threads
-      thread = db.find_one({"name": name})
-      if thread:
-            return {"response code": 200,"name": thread["name"],"id": thread["id"], "description": thread["description"], "owner": thread["owner"], "created": thread["created"]}
+def get_specific_board_by_name(mongo, name):
+      db = mongo.db.boards
+      board = db.find_one({"name": name})
+      if board:
+            return {"response code": 200,"name": board["name"],"id": board["id"], "description": board["description"], "owner": board["owner"], "created": board["created"]}
       else:
             return {"response code": 404}
           
 
-def create_thread(mongo, name, description, token):
-      db = mongo.db.threads
+def create_board(mongo, name, description, token):
+      db = mongo.db.boards
 
       owner_id, owner_username = db_user.auth_user(mongo, token)
 
       if owner_id:
             if not db.find_one({"name": name}):
-                  thread = {"id":uuid4(),"name": name, "description": description, "owner": owner_id, "created": datetime.now()}
-                  db.insert(thread)
+                  board = {"id":uuid4(),"name": name, "description": description, "owner": owner_id, "created": datetime.now()}
+                  db.insert(board)
                   return {"response code": 200}
             else:
                   return {"response code": 401}
@@ -53,16 +53,16 @@ def create_thread(mongo, name, description, token):
             return {"response code": 403}
 
 
-def delete_thread(mongo, id, token):
-      db = mongo.db.threads
-      thread = db.find_one({"id": UUID(id)})
+def delete_board(mongo, id, token):
+      db = mongo.db.boards
+      board = db.find_one({"id": UUID(id)})
       owner_id, owner_username = db_user.auth_user(mongo, token)
       
-      if thread:
-            if thread["owner"] == owner_id:
-                  db.delete_one(thread)
-                  return {"response code": 200, "msg": "thread deleted"}
+      if board:
+            if board["owner"] == owner_id:
+                  db.delete_one(board)
+                  return {"response code": 200, "msg": "board deleted"}
             else:
                   return {"response code": 403}
       else:
-            return {"response code": 404, "msg": "could not find any threads with that id!"}
+            return {"response code": 404, "msg": "could not find any boards with that id!"}
