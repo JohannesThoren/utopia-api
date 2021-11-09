@@ -4,31 +4,28 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from uuid import UUID, uuid4
-import db_user
 from datetime import datetime
 
-def x():
-      print("X")
+import db_user
 
+from response_codes import Codes
 def new_post(mongo, thread_id, token, content, title):
       db = mongo.db.posts
       if db_user.auth_user(mongo, token):
             user_id, username = db_user.auth_user(mongo, token)
             new_post = {"title": title, "content": content, "thread": UUID(thread_id), "created": datetime.now(), "author": user_id, "id": uuid4()}
             db.insert(new_post)
-            print(new_post)
-            return {"response code": 200, "msg": "post created"}
+            return {"response code": Codes.ok, "msg": "post created"}
       else:
-            return {"response code": 403}      
-      return {"poof": "x"}
+            return {"response code": Codes.not_authorized}      
 
 def get_specific_post(mongo, post_id):
       db = mongo.db.posts
       post = db.find_one({"id": UUID(post_id)})
       if post:
-            return {"id": post["id"], "title": post["title"], "author": post["author"], "thread": post["thread"], "created": post["created"],"content": post["content"], "response code": 200}
+            return {"id": post["id"], "title": post["title"], "author": post["author"], "thread": post["thread"], "created": post["created"],"content": post["content"], "response code": Codes.ok}
       else:
-            return {"response code": 404}
+            return {"response code": Codes.not_found}
 
 
 def get_all_posts(mongo, thread_id):
@@ -40,11 +37,11 @@ def get_all_posts(mongo, thread_id):
       if posts:
             for post in posts:
                   post_dict.update({f"{index}":{"title": post["title"],"id": post["id"], "content": post["content"], "author": post["author"], "created": post["created"]}})
-
+                  index += 1
 
             return post_dict
       else:
-            return {"response code": 404, "msg": "there are currently no posts"}
+            return {"response code": Codes.not_found, "msg": "there are currently no posts"}
 
 
 def delete_post(mongo, post_id, token):
@@ -54,9 +51,9 @@ def delete_post(mongo, post_id, token):
       if post:
             if post["author"] == author_id:
                   db.delete_one(post)
-                  return {"response code": 200, "msg": "post deleted"}
+                  return {"response code": Codes.ok, "msg": "post deleted"}
             else:
-                  return {"response code": 403}
+                  return {"response code": Codes.not_authorized}
       else:
-            return {"response code": 404}
+            return {"response code": Codes.not_found}
             

@@ -1,6 +1,7 @@
 from flask import Flask, blueprints, request
 from flask_pymongo import PyMongo
 
+import json
 
 import db, db_user, db_threads, db_thread_posts
 
@@ -9,9 +10,9 @@ api_thread_posts = blueprints.Blueprint('api_thread_posts', __name__)
 # TODO All routess that should be a post request, should have all data in the body
 
 # TODO this should be a post request
-@api_thread_posts.route('/thread/<thread_id>/post/new')
+@api_thread_posts.route('/thread/<thread_id>/post/new', methods=['POST'])
 def thread_posts_new(thread_id):
-      body = request.json
+      body = json.loads(request.get_data().decode("UTF-8"))
       return db_thread_posts.new_post(db.mongo, thread_id, body["token"], body["content"], body["title"])
 
 @api_thread_posts.route('/thread/<thread_id>/posts/get/all')
