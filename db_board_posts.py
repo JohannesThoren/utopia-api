@@ -8,24 +8,43 @@ from datetime import datetime
 
 import db_user
 
-from response_codes import Codes
-def new_post(mongo, board_id, token, content, title):
+from response_codes import *
+def new_post(mongo, board_id, token, content, title, flag):
       db = mongo.db.posts
       if db_user.auth_user(mongo, token):
             user_id, username = db_user.auth_user(mongo, token)
-            new_post = {"title": title, "content": content, "board": UUID(board_id), "created": datetime.now(), "author": user_id, "id": uuid4()}
+
+            # a post dict that will be used to add a new post to the database
+            new_post = {
+                  "title": title, 
+                  "content": content, 
+                  "board": UUID(board_id), 
+                  "created": datetime.now(), 
+                  "author": user_id, 
+                  "flag": flag, 
+                  "id": uuid4()
+                  }
+
             db.insert(new_post)
-            return {"response code": Codes.ok, "msg": "post created"}
+            return {"response code": OK, "msg": "post created"}
       else:
-            return {"response code": Codes.not_authorized}      
+            return {"response code": NOT_AUTHORIZED}      
 
 def get_specific_post(mongo, post_id):
       db = mongo.db.posts
       post = db.find_one({"id": UUID(post_id)})
       if post:
-            return {"id": post["id"], "title": post["title"], "author": post["author"], "board": post["board"], "created": post["created"],"content": post["content"], "response code": Codes.ok}
+            return {
+                  "id": post["id"],
+                  "title": post["title"],
+                  "author": post["author"],
+                  "board": post["board"],
+                  "created": post["created"],
+                  "content": post["content"],
+                  "response code": Codes.ok
+                  }
       else:
-            return {"response code": Codes.not_found}
+            return {"response code": NOT_FOUND}
 
 
 def get_all_posts(mongo, board_id):
@@ -41,7 +60,7 @@ def get_all_posts(mongo, board_id):
 
             return post_dict
       else:
-            return {"response code": Codes.not_found, "msg": "there are currently no posts"}
+            return {"response code": NOT_FOUND, "msg": "there are currently no posts"}
 
 
 def delete_post(mongo, post_id, token):
@@ -51,9 +70,9 @@ def delete_post(mongo, post_id, token):
       if post:
             if post["author"] == author_id:
                   db.delete_one(post)
-                  return {"response code": Codes.ok, "msg": "post deleted"}
+                  return {"response code": OK, "msg": "post deleted"}
             else:
-                  return {"response code": Codes.not_authorized}
+                  return {"response code": NOT_AUTHORIZED}
       else:
-            return {"response code": Codes.not_found}
+            return {"response code": NOT_FOUND}
             

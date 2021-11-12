@@ -4,8 +4,8 @@ from flask_pymongo import PyMongo
 from werkzeug.datastructures import *
 
 
-from routes_thread_posts import api_thread_posts
-from routes_threads import api_threads
+from routes_board_posts import api_board_posts
+from routes_boards import api_boards
 from routes_user import api_user
 
 import toml
@@ -19,8 +19,8 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 mongo.init_app(app)
 
 app.register_blueprint(api_user)
-app.register_blueprint(api_threads)
-app.register_blueprint(api_thread_posts)
+app.register_blueprint(api_boards)
+app.register_blueprint(api_board_posts)
 
 if __name__ == "__main__":
       app.run(host="0.0.0.0", port=3500)

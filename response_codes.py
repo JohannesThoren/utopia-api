@@ -4,14 +4,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from enum import Enum
 
+OK = 200
 
-class Codes(Enum):
-      ok = 200
-      
-      # error codes
-      not_authorized = 401
-      not_allowed = 403
-      not_found = 404
+# error codes
+NOT_AUTHORIZED = 401
+NOT_ALLOWED = 403
+NOT_FOUND = 404
       

@@ -5,13 +5,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import toml
 import bcrypt
-from response_codes import Codes
 from uuid import uuid4, UUID
+from response_codes import * 
+
 
 settings = toml.load("settings.toml")
 
-
 def get_token(mongo, username, password):
+
     '''
     Returns a dictionary with a response code and if a user with the specified username,
     and the password is correct, it will also return a token.
@@ -20,11 +21,11 @@ def get_token(mongo, username, password):
     user = db.find_one({"username": username})
     if user:
         if bcrypt.checkpw(password.encode("UTF-8"), user["password"]):
-            return {"response code": Codes.ok, "token": user["token"]}
+            return {"response code": OK, "token": user["token"]}
         else:
-            return {"response code": Codes.not_authorized}
+            return {"response code": NOT_AUTHORIZED}
     else:
-        return {"response code": Codes.not_found}
+        return {"response code": NOT_FOUND}
 
 
 def create_user(mongo, username, password, email, image=str(settings["settings"]["url"]+"/profile_picture")):
@@ -34,14 +35,14 @@ def create_user(mongo, username, password, email, image=str(settings["settings"]
     '''
 
     db = mongo.db.users
-    if not db.find_one({"username": username}):
+    if not db.find_one({"username": username, "email": email}):
         password = bcrypt.hashpw(password.encode("UTF-8"), bcrypt.gensalt())
         new_user = {"username": username, "email": email, "password": password,
                     "token": uuid4(), "id": uuid4(), "image": image}
         db.insert(new_user)
-        return {"response code": Codes.ok, "username": username}
+        return {"response code": OK, "username": username}
     else:
-        return {"response code": Codes.not_allowed}
+        return {"response code": NOT_ALLOWED, "msg": "username or email already in use"}
 
 # TODO make this function also remove all posts by the user
 

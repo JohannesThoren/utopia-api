@@ -1,7 +1,8 @@
 from flask import Flask, blueprints, request, jsonify
 from flask_pymongo import PyMongo
 
-import db, db_user, db_boards, db_board_posts
+import json
+import db, db_boards
 
 api_boards = blueprints.Blueprint("api_boards", __name__)
 
@@ -13,9 +14,9 @@ def boards_all():
       return db_boards.get_all_boards(db.mongo)
 
 # TODO this should be a post request
-@api_boards.route('/board/new')
+@api_boards.route('/board/new', methods=["POST"])
 def board_new():
-      body = request.json
+      body = json.loads(request.get_data().decode("UTF-8"))
       return db_boards.create_board(db.mongo, body["name"], body["description"], body["token"])
 
 @api_boards.route('/board/<board_id>/get/id/')

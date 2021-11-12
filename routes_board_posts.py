@@ -13,7 +13,7 @@ api_board_posts = blueprints.Blueprint('api_board_posts', __name__)
 @api_board_posts.route('/board/<board_id>/post/new', methods=['POST'])
 def board_posts_new(board_id):
       body = json.loads(request.get_data().decode("UTF-8"))
-      return db_board_posts.new_post(db.mongo, board_id, body["token"], body["content"], body["title"])
+      return db_board_posts.new_post(db.mongo, board_id, body["token"], body["content"], body["title"], body["flag"])
 
 @api_board_posts.route('/board/<board_id>/posts/get/all')
 def board_posts_all(board_id):

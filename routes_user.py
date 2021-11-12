@@ -11,8 +11,6 @@ import json
 
 import db
 import db_user
-import db_threads
-import db_thread_posts
 
 api_user = blueprints.Blueprint("api_user", __name__)
 
@@ -40,9 +38,7 @@ def user_delete():
     body = json.loads(request.get_data().decode("UTF-8"))
     return db_user.delete_user(db.mongo, body["token"])
 
-
 # the following routes are all get routes 
-
 @api_user.route('/user/get/username/<username>')
 def user_get_by_name(username):
     return db_user.get_user_by_name(db.mongo, username)
