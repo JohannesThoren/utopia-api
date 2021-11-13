@@ -9,7 +9,7 @@ from datetime import datetime
 import db_user
 
 from response_codes import *
-def new_post(mongo, board_id, token, content, title, flag):
+def new_post(mongo, board_id, token, content, title, flag="TEXT"):
       db = mongo.db.posts
       if db_user.auth_user(mongo, token):
             user_id, username = db_user.auth_user(mongo, token)
