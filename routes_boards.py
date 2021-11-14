@@ -19,11 +19,11 @@ def board_new():
       body = json.loads(request.get_data().decode("UTF-8"))
       return db_boards.create_board(db.mongo, body["name"], body["description"], body["token"])
 
-@api_boards.route('/board/<board_id>/get/id/')
+@api_boards.route('/board/get/id/<board_id>')
 def board_get_specific_by_id(board_id):
       return db_boards.get_specific_board_by_id(db.mongo, board_id)
 
-@api_boards.route('/board/<board_name>/get/name/')
+@api_boards.route('/board/get/name/<board_name>')
 def board_get_specific_by_name(board_name):
       return db_boards.get_specific_board_by_name(db.mongo, board_name)
 

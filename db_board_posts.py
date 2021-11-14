@@ -55,7 +55,7 @@ def get_all_posts(mongo, board_id):
 
       if posts:
             for post in posts:
-                  post_dict.update({f"{index}":{"title": post["title"],"id": post["id"], "content": post["content"], "author": post["author"], "created": post["created"]}})
+                  post_dict.update({f"{index}":{"title": post["title"],"id": post["id"], "content": post["content"], "author": post["author"], "created": post["created"], "flag": post["flag"]}})
                   index += 1
 
             return post_dict
