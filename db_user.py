@@ -57,6 +57,20 @@ def delete_user(mongo, token):
     else:
         return {"response code": 404}
 
+def get_posts(mongo, user_id):
+    db = mongo.db.posts
+    posts = db.find({"author": UUID(user_id)})
+    post_dict = {}
+    index = 0
+
+    if posts:
+        for post in posts:
+                post_dict.update({f"{index}":{"title": post["title"],"id": post["id"], "content": post["content"], "author": post["author"], "created": post["created"], "flag": post["flag"]}})
+                index += 1
+        
+        return post_dict
+    else:
+        return {"response code": NOT_FOUND}
 
 def get_user_by_name(mongo, username):
     '''Returns a user by using the username to search through the database'''

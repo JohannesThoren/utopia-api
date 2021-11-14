@@ -26,7 +26,6 @@ def user_new():
     body = json.loads(request.get_data().decode("UTF-8"))
     return db_user.create_user(db.mongo, body["username"], body["password"], body["email"])
 
-
 # TODO fix this route so it actualy works!!!
 @api_user.route('/user/edit',methods=['POST'])
 def user_edit():
@@ -37,6 +36,10 @@ def user_edit():
 def user_delete():
     body = json.loads(request.get_data().decode("UTF-8"))
     return db_user.delete_user(db.mongo, body["token"])
+
+@api_user.route('/user/<user_id>/get/posts')
+def user_get_posts(user_id):
+    return db_user.get_posts(db.mongo, user_id)
 
 # the following routes are all get routes 
 @api_user.route('/user/get/username/<username>')
