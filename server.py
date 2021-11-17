@@ -23,4 +23,4 @@ app.register_blueprint(api_boards)
 app.register_blueprint(api_board_posts)
 
 if __name__ == "__main__":
-      app.run(host="0.0.0.0", port=3500)
+      app.run(host="0.0.0.0", port=3500, debug=True)

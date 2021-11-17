@@ -46,11 +46,9 @@ def user_get_posts(user_id):
 def user_get_by_name(username):
     return db_user.get_user_by_name(db.mongo, username)
 
-
 @api_user.route('/user/get/id/<user_id>')
 def user_get_by_id(user_id):
     return db_user.get_user_by_id(db.mongo, user_id)
-
 
 @api_user.route('/user/get/token/<token>')
 def user_get_by_token(token):

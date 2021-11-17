@@ -31,9 +31,18 @@ def board_get_specific_by_name(board_name):
 @api_boards.route('/board/<board_id>/edit/')
 def board_specific_modify(board_id):
       return
-
 # TODO this should be a post request
 @api_boards.route('/board/<board_id>/delete/')      
 def board_specific_delete(board_id):
       body = request.json
       return db_boards.delete_board(db.mongo, board_id, body["token"])
+
+@api_boards.route('/board/<board_id>/follow', methods=["POST"])
+def user_follow_board(board_id):
+      body = json.loads(request.get_data().decode("UTF-8"))
+      return db_boards.user_follow_board(db.mongo, body["token"], board_id)
+
+@api_boards.route('/board/<board_id>/unfollow', methods=["POST"])
+def user_unfollow_board(board_id):
+      body = json.loads(request.get_data().decode("UTF-8"))
+      return db_boards.user_unfollow_board(db.mongo, body["token"], board_id)

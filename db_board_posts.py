@@ -22,7 +22,8 @@ def new_post(mongo, board_id, token, content, title, flag="TEXT"):
                   "created": datetime.now(), 
                   "author": user_id, 
                   "flag": flag, 
-                  "id": uuid4()
+                  "id": uuid4(),
+                  # "likes": 0
                   }
 
             db.insert(new_post)
@@ -41,6 +42,7 @@ def get_specific_post(mongo, post_id):
                   "board": post["board"],
                   "created": post["created"],
                   "content": post["content"],
+                  # "likes": post["likes"],
                   "response code": Codes.ok
                   }
       else:
@@ -75,4 +77,4 @@ def delete_post(mongo, post_id, token):
                   return {"response code": NOT_AUTHORIZED}
       else:
             return {"response code": NOT_FOUND}
-            
+                  

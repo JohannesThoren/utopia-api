@@ -38,7 +38,7 @@ def create_user(mongo, username, password, email, image=str(settings["settings"]
     if not db.find_one({"username": username, "email": email}):
         password = bcrypt.hashpw(password.encode("UTF-8"), bcrypt.gensalt())
         new_user = {"username": username, "email": email, "password": password,
-                    "token": uuid4(), "id": uuid4(), "image": image}
+                    "token": uuid4(), "id": uuid4(), "image": image, "following": []}
         db.insert(new_user)
         return {"response code": OK, "username": username}
     else:
