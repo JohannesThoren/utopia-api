@@ -99,7 +99,7 @@ def get_user_by_token(mongo, token):
     token = UUID(token)
     user = db.find_one({"token": token})
     if user:
-        return {"response code": 200, "username": user["username"], "id": user["id"], "profile_picture": user["image"]}
+        return {"response code": 200, "username": user["username"], "id": user["id"], "profile_picture": user["image"], "following": user["following"]}
     else:
         return {"response code": 404}
 

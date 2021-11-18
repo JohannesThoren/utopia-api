@@ -21,7 +21,7 @@ def new_post(mongo, board_id, token, content, title, flag="TEXT"):
                   "board": UUID(board_id), 
                   "created": datetime.now(), 
                   "author": user_id, 
-                  "flag": flag, 
+                  "flag": flag,
                   "id": uuid4(),
                   # "likes": 0
                   }
@@ -42,8 +42,8 @@ def get_specific_post(mongo, post_id):
                   "board": post["board"],
                   "created": post["created"],
                   "content": post["content"],
-                  # "likes": post["likes"],
-                  "response code": Codes.ok
+                  "flag": post["flag"],
+                  "response code": OK
                   }
       else:
             return {"response code": NOT_FOUND}

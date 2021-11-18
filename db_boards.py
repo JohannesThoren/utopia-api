@@ -13,39 +13,46 @@ from response_codes import *
 
 
 def user_follow_board(mongo, token, board_id):
-	db = mongo.db.users
-	token = UUID(token)
-	user = db.find_one({"token": token})
-	following = user["following"]
-	if not board_id in following:
-		following.append(board_id)
-		if db.update({"token": token}, {"$set": {"following": following}}):
-			return {"response code": OK}
-		else:
-			return {"response code": NOT_AUTHORIZED}
-	else:
-		return {"response code": NOT_ALLOWED}
+    db = mongo.db.users
+    token = UUID(token)
+    user = db.find_one({"token": token})
+    following = user["following"]
+    if not board_id in following:
+        following.append(board_id)
+        if db.update({"token": token}, {"$set": {"following": following}}):
+            board_followers = mongo.db.boards.find_one({"id": UUID(board_id)})["followers"]
+            mongo.db.boards.update({"id": UUID(board_id)}, {"$set": {"followers": board_followers + 1}})
+            return {"response code": OK}
+        else:
+            return {"response code": NOT_AUTHORIZED}
+    else:
+        return {"response code": NOT_ALLOWED}
+
 
 def user_unfollow_board(mongo, token, board_id):
-	db = mongo.db.users
-	token = UUID(token)
-	user = db.find_one({"token": token})
-	following = user["following"]
+    db = mongo.db.users
+    token = UUID(token)
+    user = db.find_one({"token": token})
+    following = user["following"]
 
-	if board_id in following:
-		following.remove(board_id)
-		if db.update({"token": token}, {"$set": {"following": following}}):
-			return {"response code": OK}
-		else:
-			return {"response code": NOT_ALLOWED}
-	else:
-		return {"response code": NOT_FOUND}
+    if board_id in following:
+        following.remove(board_id)
+        if db.update({"token": token}, {"$set": {"following": following}}):
+            board_followers = mongo.db.boards.find_one({"id": UUID(board_id)})["followers"]
+            mongo.db.boards.update({"id": UUID(board_id)}, {"$set": {"followers": board_followers - 1}})
+            return {"response code": OK}
+        else:
+            return {"response code": NOT_ALLOWED}
+    else:
+        return {"response code": NOT_FOUND}
+
+
 def get_all_boards(mongo):
     db = mongo.db.boards
     boards = {}
     index = 0
     for board in db.find({}):
-        boards.update({f"{index}": {"id": board["id"], "name": board["name"]}})
+        boards.update({f"{index}": {"id": board["id"], "name": board["name"], "followers": board["followers"]}})
         index += 1
 
     return boards
@@ -55,7 +62,7 @@ def get_specific_board_by_id(mongo, id):
     db = mongo.db.boards
     board = db.find_one({"id": UUID(id)})
     if board:
-        return {"response code": 200, "name": board["name"], "id": board["id"], "description": board["description"], "owner": board["owner"], "created": board["created"]}
+        return {"response code": 200, "name": board["name"], "id": board["id"], "description": board["description"], "owner": board["owner"], "created": board["created"], "followers": board["followers"]}
     else:
         return {"response code": 404}
 
@@ -64,7 +71,7 @@ def get_specific_board_by_name(mongo, name):
     db = mongo.db.boards
     board = db.find_one({"name": name})
     if board:
-        return {"response code": 200, "name": board["name"], "id": board["id"], "description": board["description"], "owner": board["owner"], "created": board["created"]}
+        return {"response code": 200, "name": board["name"], "id": board["id"], "description": board["description"], "owner": board["owner"], "created": board["created"], "followers": board["followers"]}
     else:
         return {"response code": 404}
 
@@ -77,7 +84,7 @@ def create_board(mongo, name, description, token):
     if owner_id:
         if not db.find_one({"name": name}):
             board = {"id": uuid4(), "name": name, "description": description,
-                     "owner": owner_id, "created": datetime.now()}
+                     "owner": owner_id, "created": datetime.now(), "followers": 0}
             db.insert(board)
             return {"response code": 200}
         else:
