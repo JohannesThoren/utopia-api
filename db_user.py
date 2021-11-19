@@ -5,6 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import toml
 import bcrypt
+import secrets
 from uuid import uuid4, UUID
 from response_codes import * 
 
@@ -21,6 +22,8 @@ def get_token(mongo, username, password):
     user = db.find_one({"username": username})
     if user:
         if bcrypt.checkpw(password.encode("UTF-8"), user["password"]):
+            new_token = secrets.token_urlsafe(64)
+            db.update({"username": username}, {"$set": {"token": token}})
             return {"response code": OK, "token": user["token"]}
         else:
             return {"response code": NOT_AUTHORIZED}
@@ -38,7 +41,7 @@ def create_user(mongo, username, password, email, image=str(settings["settings"]
     if not db.find_one({"username": username, "email": email}):
         password = bcrypt.hashpw(password.encode("UTF-8"), bcrypt.gensalt())
         new_user = {"username": username, "email": email, "password": password,
-                    "token": uuid4(), "id": uuid4(), "image": image, "following": []}
+                    "token": secrets.token_urlsafe(64), "id": uuid4(), "image": image, "following": []}
         db.insert(new_user)
         return {"response code": OK, "username": username}
     else:
@@ -107,7 +110,6 @@ def get_user_by_token(mongo, token):
 def auth_user(mongo, token):
     '''checks if there is a user that has the specified token'''
     db = mongo.db.users
-    token = UUID(token)
     user = db.find_one({"token": token})
     if user:
         return user["id"], user["username"]
