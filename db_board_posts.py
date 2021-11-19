@@ -48,7 +48,7 @@ def get_n_amount_of_latest_posts(mongo, n):
         for i in reversed(range(posts.count() - n, posts.count())):    
             post = posts[i]        
             post_dict.update({f"{index}": {"title": post["title"], "id": post["id"], "content": post["content"],
-                             "author": post["author"], "created": post["created"], "flag": post["flag"]}})
+                             "author": post["author"], "created": post["created"], "flag": post["flag"], "board": post["board"]}})
             index += 1
         return post_dict
 
@@ -79,7 +79,7 @@ def get_all_posts(mongo, board_id):
     if posts:
         for post in posts:
             post_dict.update({f"{index}": {"title": post["title"], "id": post["id"], "content": post["content"],
-                             "author": post["author"], "created": post["created"], "flag": post["flag"]}})
+                             "author": post["author"], "created": post["created"], "flag": post["flag"], "board": post["board"]}})
             index += 1
 
         return post_dict
