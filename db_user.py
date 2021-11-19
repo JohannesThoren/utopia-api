@@ -23,8 +23,8 @@ def get_token(mongo, username, password):
     if user:
         if bcrypt.checkpw(password.encode("UTF-8"), user["password"]):
             new_token = secrets.token_urlsafe(64)
-            db.update({"username": username}, {"$set": {"token": token}})
-            return {"response code": OK, "token": user["token"]}
+            db.update({"username": username}, {"$set": {"token": new_token}})
+            return {"response code": OK, "token": new_token}
         else:
             return {"response code": NOT_AUTHORIZED}
     else:
@@ -99,10 +99,10 @@ def get_user_by_token(mongo, token):
     '''fetch a user with a specific token (this will only be used by the owner of user account)'''
 
     db = mongo.db.users
-    token = UUID(token)
     user = db.find_one({"token": token})
     if user:
-        return {"response code": 200, "username": user["username"], "id": user["id"], "profile_picture": user["image"], "following": user["following"]}
+        return {"response code": 200, "username": user["username"], "id": user["id"], "profile_picture": user["image"], "following": user["following"], "token":
+            user["token"]}
     else:
         return {"response code": 404}
 
