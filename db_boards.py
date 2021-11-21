@@ -14,7 +14,6 @@ from response_codes import *
 
 def user_follow_board(mongo, token, board_id):
     db = mongo.db.users
-    token = UUID(token)
     user = db.find_one({"token": token})
     following = user["following"]
     if not board_id in following:
@@ -31,7 +30,6 @@ def user_follow_board(mongo, token, board_id):
 
 def user_unfollow_board(mongo, token, board_id):
     db = mongo.db.users
-    token = UUID(token)
     user = db.find_one({"token": token})
     following = user["following"]
 
