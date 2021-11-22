@@ -19,8 +19,10 @@ def user_follow_board(mongo, token, board_id):
     if not board_id in following:
         following.append(board_id)
         if db.update({"token": token}, {"$set": {"following": following}}):
-            board_followers = mongo.db.boards.find_one({"id": UUID(board_id)})["followers"]
-            mongo.db.boards.update({"id": UUID(board_id)}, {"$set": {"followers": board_followers + 1}})
+            board_followers = mongo.db.boards.find_one(
+                {"id": UUID(board_id)})["followers"]
+            mongo.db.boards.update({"id": UUID(board_id)}, {
+                                   "$set": {"followers": board_followers + 1}})
             return {"response code": OK}
         else:
             return {"response code": NOT_AUTHORIZED}
@@ -36,8 +38,10 @@ def user_unfollow_board(mongo, token, board_id):
     if board_id in following:
         following.remove(board_id)
         if db.update({"token": token}, {"$set": {"following": following}}):
-            board_followers = mongo.db.boards.find_one({"id": UUID(board_id)})["followers"]
-            mongo.db.boards.update({"id": UUID(board_id)}, {"$set": {"followers": board_followers - 1}})
+            board_followers = mongo.db.boards.find_one(
+                {"id": UUID(board_id)})["followers"]
+            mongo.db.boards.update({"id": UUID(board_id)}, {
+                                   "$set": {"followers": board_followers - 1}})
             return {"response code": OK}
         else:
             return {"response code": NOT_ALLOWED}
@@ -50,7 +54,8 @@ def get_all_boards(mongo):
     boards = {}
     index = 0
     for board in db.find({}):
-        boards.update({f"{index}": {"id": board["id"], "name": board["name"], "followers": board["followers"]}})
+        boards.update({f"{index}": {
+                      "id": board["id"], "name": board["name"], "followers": board["followers"]}})
         index += 1
 
     return boards

@@ -7,13 +7,13 @@ import toml
 import bcrypt
 import secrets
 from uuid import uuid4, UUID
-from response_codes import * 
+from response_codes import *
 
 
 settings = toml.load("settings.toml")
 
-def get_token(mongo, username, password):
 
+def get_token(mongo, username, password):
     '''
     Returns a dictionary with a response code and if a user with the specified username,
     and the password is correct, it will also return a token.
@@ -60,7 +60,9 @@ def delete_user(mongo, token):
     else:
         return {"response code": 404}
 
+
 def get_posts(mongo, user_id):
+    '''all posts that a specific user has posted'''
     db = mongo.db.posts
     posts = db.find({"author": UUID(user_id)})
     post_dict = {}
@@ -68,12 +70,14 @@ def get_posts(mongo, user_id):
 
     if posts:
         for post in posts:
-                post_dict.update({f"{index}":{"title": post["title"],"id": post["id"], "content": post["content"], "author": post["author"], "created": post["created"], "flag": post["flag"]}})
+                post_dict.update({f"{index}": {"title": post["title"], "id": post["id"], "content": post["content"],
+                                 "author": post["author"], "created": post["created"], "flag": post["flag"], "board": post["board"]}})
                 index += 1
-        
+
         return post_dict
     else:
         return {"response code": NOT_FOUND}
+
 
 def get_user_by_name(mongo, username):
     '''Returns a user by using the username to search through the database'''
@@ -107,6 +111,21 @@ def get_user_by_token(mongo, token):
         return {"response code": 404}
 
 
+def get_user_owned_boards(mongo, id):
+    '''gets the boars that a specific user owns'''
+    db = mongo.db.boards
+    boards = db.find({"owner": UUID(id)})
+    boards_dict = {}
+    index = 0
+    if boards:
+            for board in boards:
+                    boards_dict.update({f"{index}": { "response code": OK,
+                        "name": board["name"], "id": board["id"], "description": board["description"], "owner": board["owner"], "created": board["created"], "followers": board["followers"]}})
+                    index += 1
+            return boards_dict
+    else:
+        return {"response code": NOT_FOUND}   
+             
 def auth_user(mongo, token):
     '''checks if there is a user that has the specified token'''
     db = mongo.db.users

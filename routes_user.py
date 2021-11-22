@@ -21,6 +21,10 @@ def authenticate():
     body = json.loads(request.get_data().decode("UTF-8"))
     return db_user.get_token(db.mongo, body["username"], body["password"])
 
+@api_user.route('/user/get/boards/<user_id>')
+def user_get_boards(user_id):
+          return db_user.get_user_owned_boards(db.mongo, user_id)
+
 @api_user.route('/user/new',methods=['POST'])
 def user_new():
     body = json.loads(request.get_data().decode("UTF-8"))
