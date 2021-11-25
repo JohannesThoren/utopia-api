@@ -31,7 +31,7 @@ def get_token(mongo, username, password):
         return {"response code": NOT_FOUND}
 
 
-def create_user(mongo, username, password, email, image=str(settings["settings"]["url"]+"/profile_picture")):
+def create_user(mongo, username, password, email, image="https://source.unsplash.com/random/1000x1000"):
     '''
     Checks if a user with the provided name exists and if not then create a user with that name,
     and returns the username.

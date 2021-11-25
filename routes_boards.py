@@ -13,6 +13,10 @@ api_boards = blueprints.Blueprint("api_boards", __name__)
 def boards_all():
       return db_boards.get_all_boards(db.mongo)
 
+@api_boards.route('/boards/<n>/top/follow')
+def board_n_top_followed(n):
+      return db_boards.get_n_most_followed_boards(db.mongo, n)
+
 # TODO this should be a post request
 @api_boards.route('/board/new', methods=["POST"])
 def board_new():
