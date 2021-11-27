@@ -13,7 +13,11 @@ from response_codes import *
 
 def new_post(mongo, board_id, token, content, title, flag="TEXT"):
     db = mongo.db.posts
-    if db_user.auth_user(mongo, token):
+    content_len = len(content)
+    # checks if the content is more than the allowed amount (1000 characters)
+    if content_len > 1000:
+        return {"response code": NOT_ALLOWED, "msg": "content to large"}
+    elif db_user.auth_user(mongo, token):
         user_id, username = db_user.auth_user(mongo, token)
 
         # a post dict that will be used to add a new post to the database
