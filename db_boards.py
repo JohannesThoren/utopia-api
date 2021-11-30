@@ -78,7 +78,10 @@ def get_n_most_followed_boards(mongo, n):
 
 def get_specific_board_by_id(mongo, id):
     db = mongo.db.boards
-    board = db.find_one({"id": UUID(id)})
+    try:
+        board = db.find_one({"id": UUID(id)})
+    except Exception as e:
+        return {"response code": 404, "msg": str(e)}
     if board:
         return {"response code": 200, "name": board["name"], "id": board["id"], "description": board["description"], "owner": board["owner"], "created": board["created"], "followers": board["followers"]}
     else:
@@ -113,11 +116,13 @@ def create_board(mongo, name, description, token):
 
 def delete_board(mongo, id, token):
     db = mongo.db.boards
+    db_deleted_boards = mongo.db.deleted_boards
     board = db.find_one({"id": UUID(id)})
     owner_id, owner_username = db_user.auth_user(mongo, token)
 
     if board:
         if board["owner"] == owner_id:
+            db_deleted_boards.insert(board)
             db.delete_one(board)
             return {"response code": 200, "msg": "board deleted"}
         else:

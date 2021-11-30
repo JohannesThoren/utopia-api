@@ -13,30 +13,33 @@ from response_codes import *
 
 def new_post(mongo, board_id, token, content, title, flag="TEXT"):
     db = mongo.db.posts
+    db_boards = mongo.db.boards
     content_len = len(content)
     # checks if the content is more than the allowed amount (1000 characters)
-    if content_len > 1000:
-        return {"response code": NOT_ALLOWED, "msg": "content to large"}
-    elif db_user.auth_user(mongo, token):
-        user_id, username = db_user.auth_user(mongo, token)
+    if db_boards.find({"id": board_id}):
+        if content_len > 1000:
+            return {"response code": NOT_ALLOWED, "msg": "content to large"}
+        elif db_user.auth_user(mongo, token):
+            user_id, username = db_user.auth_user(mongo, token)
 
-        # a post dict that will be used to add a new post to the database
-        new_post = {
-            "title": title,
-            "content": content,
-            "board": UUID(board_id),
-            "created": datetime.now(),
-            "author": user_id,
-            "flag": flag,
-            "id": uuid4(),
-            # "likes": 0
-        }
+            # a post dict that will be used to add a new post to the database
+            new_post = {
+                "title": title,
+                "content": content,
+                "board": UUID(board_id),
+                "created": datetime.now(),
+                "author": user_id,
+                "flag": flag,
+                "id": uuid4(),
+                # "likes": 0
+            }
 
-        db.insert(new_post)
-        return {"response code": OK, "msg": "post created"}
+            db.insert(new_post)
+            return {"response code": OK, "msg": "post created"}
+        else:
+            return {"response code": NOT_AUTHORIZED}
     else:
-        return {"response code": NOT_AUTHORIZED}
-
+        return {"response code": NOT_ALLOWED, "msg": "board does not exist"}
 
 def get_n_amount_of_latest_posts(mongo, n):
     n = int(n)
@@ -93,10 +96,12 @@ def get_all_posts(mongo, board_id):
 
 def delete_post(mongo, post_id, token):
     db = mongo.db.posts
+    db_deleted_post = mongo.db.deleted_post
     post = db.find_one({"id": UUID(post_id)})
     author_id, username = db_user.auth_user(mongo, token)
     if post:
         if post["author"] == author_id:
+            db_deleted_post.insert(post)
             db.delete_one(post)
             return {"response code": OK, "msg": "post deleted"}
         else:

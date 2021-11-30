@@ -9,6 +9,7 @@ import secrets
 from uuid import uuid4, UUID
 from response_codes import *
 
+import hashlib
 
 settings = toml.load("settings.toml")
 
@@ -31,12 +32,17 @@ def get_token(mongo, username, password):
         return {"response code": NOT_FOUND}
 
 
-def create_user(mongo, username, password, email, image="https://source.unsplash.com/random/1000x1000"):
+def create_user(mongo, username, password, email, image=""):
     '''
     Checks if a user with the provided name exists and if not then create a user with that name,
     and returns the username.
     '''
 
+    if image == "":
+            pp_hash = hashlib.sha1(username.encode("UTF-8")).hexdigest()  
+            image = f"https://www.gravatar.com/avatar/{pp_hash}?s=1024&d=identicon"
+    
+    
     db = mongo.db.users
     if not db.find_one({"username": username, "email": email}):
         password = bcrypt.hashpw(password.encode("UTF-8"), bcrypt.gensalt())
