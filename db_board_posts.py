@@ -79,7 +79,7 @@ def get_specific_post(mongo, post_id):
 
 def get_all_posts(mongo, board_id):
     db = mongo.db.posts
-    posts = db.find({"board": UUID(board_id)})
+    posts = db.find({"board": UUID(board_id)}).limit(25000)
     post_dict = {}
     index = 0
 
