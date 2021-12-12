@@ -7,6 +7,7 @@
 from flask import Flask, blueprints, request
 from flask_pymongo import PyMongo
 
+
 import json
 
 import db
@@ -15,6 +16,12 @@ import db_user
 api_user = blueprints.Blueprint("api_user", __name__)
 
 
+@api_user.route('/user/update', methods=['POST'])
+def update_user():
+    body = json.loads(request.get_data().decode("UTF-8"))
+    print(type(body["settings"]))
+    print(body["settings"])
+    return db_user.update_profile_settings(db.mongo, body["token"], body["settings"])
 
 @api_user.route('/user/auth',methods=['POST'])
 def authenticate():
@@ -28,7 +35,7 @@ def user_get_boards(user_id):
 @api_user.route('/user/new',methods=['POST'])
 def user_new():
     body = json.loads(request.get_data().decode("UTF-8"))
-    return db_user.create_user(db.mongo, body["username"], body["password"], body["email"])
+    return db_user.create_user(db.mongo, body["username"], body["password"], body["email"], "")
 
 # TODO fix this route so it actualy works!!!
 @api_user.route('/user/edit',methods=['POST'])
