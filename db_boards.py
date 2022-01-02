@@ -12,6 +12,29 @@ from datetime import datetime
 
 
 from response_codes import *
+from db_user import auth_user
+
+
+def update_board_helper(mongo, token, db, settings, board):
+    user_id, username = auth_user(mongo, token)
+    if user_id == UUID(board["owner"]):
+        db.update({"id": board["id"]}, {"$set": {"name": settings["name"], "owner": settings["owner"], "description": settings["description"]}})
+        return {"msg": "settings changed", "response code": OK}
+    else:
+        return {"response code": NOT_FOUND, "err": "you are not the owner of this board, So changing the settings are therefor not possible"}
+
+
+def update_board_settings(mongo, token, settings, board_id):
+    db = mongo.db.boards
+    board = db.find_one({"id": UUID(board_id)})
+    name_check_board = db.find_one({"name": settings["name"]})
+    user_id, username = auth_user(mongo, token)
+    if not db.find_one({"name": settings["name"]}):
+        return update_board_helper(mongo, token, db, settings, board)
+    elif name_check_board["id"] == UUID(board_id):
+        return update_board_helper(mongo, token, db, settings, board)
+    else:
+        return {"err": "a board with that name already exists", "response code": NOT_ALLOWED}
 
 
 def user_follow_board(mongo, token, board_id):
@@ -55,8 +78,9 @@ def get_all_boards(mongo):
     db = mongo.db.boards
     boards = {}
     index = 0
-    for board in db.find({}).sort("created",pymongo.DESCENDING):
-        boards.update({f"{index}": {"id": board["id"], "name": board["name"], "followers": board["followers"], "created": board["created"]}})
+    for board in db.find({}).sort("created", pymongo.DESCENDING):
+        boards.update({f"{index}": {"id": board["id"], "name": board["name"],
+                      "followers": board["followers"], "created": board["created"]}})
         index += 1
 
     return boards
@@ -71,10 +95,12 @@ def get_n_most_followed_boards(mongo, n):
 
     if boards:
         for board in boards:
-            boards_dict.update({f"{index}": {"name": board["name"], "id": board["id"], "description": board["description"], "owner": board["owner"], "created": board["created"], "followers": board["followers"]}})
+            boards_dict.update({f"{index}": {"name": board["name"], "id": board["id"], "description": board["description"],
+                               "owner": board["owner"], "created": board["created"], "followers": board["followers"]}})
             index += 1
         return boards_dict
     return {"response code": NOT_FOUND}
+
 
 def get_specific_board_by_id(mongo, id):
     db = mongo.db.boards
