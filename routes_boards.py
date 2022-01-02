@@ -38,10 +38,11 @@ def board_get_specific_by_name(board_name):
     return db_boards.get_specific_board_by_name(db.mongo, board_name)
 
 
-@api_boards.route('/board/<board_id>/edit/')
-def board_specific_modify(board_id):
-    return
 
+@api_boards.route('/board/<board_id>/update/', methods=['POST'])
+def update_board(board_id):
+    body = json.loads(request.get_data().decode("UTF-8"))
+    return db_boards.update_board_settings(db.mongo, body["token"], body["settings"], board_id)
 
 @api_boards.route('/board/<board_id>/delete/', methods=['POST'])
 def board_specific_delete(board_id):
