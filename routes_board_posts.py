@@ -21,7 +21,6 @@ def board_posts_new(board_id):
                                    body["content"], body["title"],
                                    body["flag"])
 
-
 @api_board_posts.route('/board/<board_id>/posts/get/all')
 def board_posts_all(board_id):
     return db_board_posts.get_all_posts(db.mongo, board_id)
@@ -43,9 +42,8 @@ def board_posts_specific_edit(board_id, post_id):
     body = request.json
     return
 
-
 # TODO this should be a post request
-@api_board_posts.route('/post/<post_id>/delete')
+@api_board_posts.route('/post/<post_id>/delete', methods=['POST'])
 def board_posts_specific_delete(post_id):
-    body = request.json
+    body = json.loads(request.get_data().decode("UTF-8"))
     return db_board_posts.delete_post(db.mongo, post_id, body["token"])
