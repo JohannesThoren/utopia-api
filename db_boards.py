@@ -15,10 +15,23 @@ from response_codes import *
 from db_user import auth_user
 
 
+def search_by_search_term(mongo, search_term):
+    db = mongo.db.boards
+    results = db.find({"name": {"$regex" : search_term, '$options': 'i'}}).limit(1000)
+    result_dict = {}
+    index = 0
+
+    for result in results:
+        result_dict.update({f"{index}": {"name": result["name"], "id": result["id"], "followers": result["followers"]}})
+        index += 1
+
+    return result_dict
+
 def update_board_helper(mongo, token, db, settings, board):
     user_id, username = auth_user(mongo, token)
     if user_id == UUID(board["owner"]):
-        db.update({"id": board["id"]}, {"$set": {"name": settings["name"], "owner": settings["owner"], "description": settings["description"]}})
+        db.update({"id": board["id"]}, {"$set": {"name": settings["name"],
+                  "owner": settings["owner"], "description": settings["description"]}})
         return {"msg": "settings changed", "response code": OK}
     else:
         return {"response code": NOT_FOUND, "err": "you are not the owner of this board, So changing the settings are therefor not possible"}

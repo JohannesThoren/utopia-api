@@ -9,6 +9,10 @@ api_boards = blueprints.Blueprint("api_boards", __name__)
 
 # TODO All routess that should be a post request, should have all data in the body
 
+@api_boards.route('/search/boards/<term>')
+def search_boards(term):
+    return db_boards.search_by_search_term(db.mongo, term)
+    
 
 @api_boards.route('/boards/get/all')
 def boards_all():
