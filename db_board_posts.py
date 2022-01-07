@@ -41,6 +41,7 @@ def new_post(mongo, board_id, token, content, title, flag="TEXT"):
     else:
         return {"response code": NOT_ALLOWED, "msg": "board does not exist"}
 
+
 def get_n_amount_of_latest_posts(mongo, n):
     n = int(n)
     db = mongo.db.posts
@@ -50,14 +51,15 @@ def get_n_amount_of_latest_posts(mongo, n):
 
     if n > posts.count():
         n = posts.count()
-        
+
     if posts:
-        for i in reversed(range(posts.count() - n, posts.count())):    
-            post = posts[i]        
+        for i in reversed(range(posts.count() - n, posts.count())):
+            post = posts[i]
             post_dict.update({f"{index}": {"title": post["title"], "id": post["id"], "content": post["content"],
                              "author": post["author"], "created": post["created"], "flag": post["flag"], "board": post["board"]}})
             index += 1
         return post_dict
+
 
 def get_specific_post(mongo, post_id):
     db = mongo.db.posts
