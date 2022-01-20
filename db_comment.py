@@ -4,17 +4,23 @@ from datetime import datetime
 from uuid import uuid4, UUID
 from db_user import auth_user
 
+import response_codes
+
 
 def new_comment(mongo, comment, post_id, token):
     db = mongo.db.comments
     user_id, username = auth_user(mongo, token)
 
-    if user_id:
-        db.insert({"id": uuid4(), "user": user_id,
-                  "date": datetime.now(), "post": post_id, "comment": comment})
-        return {"msg": "Success"}
+    if len(comment) <= 500:
+
+        if user_id:
+            db.insert({"id": uuid4(), "user": user_id,
+                       "date": datetime.now(), "post": post_id, "comment": comment})
+            return {"msg": "Success", "response code": response_codes.OK}
+        else:
+            return {"err": "could not authorize"}
     else:
-        return {"err": "could not authorize"}
+        return {"msg": "comment to long, comment has to be less than 500 characters!", "response code": response_codes.NOT_ALLOWED}
 
 
 def delete_comment(mongo, comment_id, post_id, token):
@@ -25,7 +31,7 @@ def delete_comment(mongo, comment_id, post_id, token):
     if user_id:
         if user_id == comment["id"]:
             db.delete(comment)
-            return {"msg": "Success"}
+            return {"msg": "Success", "response code": response_codes.OK}
         else:
             return {"err": "you are not the author of this comment"}
     else:
@@ -54,4 +60,4 @@ def get_comments_for_post(mongo, post_id):
             index += 1
         return comments_obj
     else:
-        return {"msg": "There are no comments for this post yet"}
+        return {"msg": "There are no comments for this post yet", "response code": response_codes.NOT_FOUND}

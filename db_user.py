@@ -27,8 +27,10 @@ def update_profile_helper(mongo, token, db, settings):
 
 
 def update_profile_settings(mongo, token, settings):
-    print(type(settings))
-    print(settings["username"])
+
+    if len(settings["username"]) > 32:
+        return {"response code": NOT_ALLOWED, "err": "username to long!"}
+
     db = mongo.db.users
     user = db.find_one({"username": settings["username"]})
     if not user:
@@ -62,6 +64,9 @@ def create_user(mongo, username, password, email, profile_picture="", info="No I
     Checks if a user with the provided name exists and if not then create a user with that name,
     and returns the username.
     '''
+
+    if len(username) > 32:
+        return {"response code": NOT_ALLOWED, "err": "username to long!"}
 
     if profile_picture == "":
         pp_hash = hashlib.sha1(username.encode("UTF-8")).hexdigest()
@@ -119,10 +124,10 @@ def get_user_by_name(mongo, username):
         return {"response code": 404}
 
 
-def get_user_by_id(mongo, id):
+def get_user_by_id(mongo, uid):
     '''fetch a user with a specific id'''
     db = mongo.db.users
-    user = db.find_one({"id": UUID(id)})
+    user = db.find_one({"id": UUID(uid)})
     if user:
         return {"response code": 200, "username": user["username"], "id": user["id"], "profile_picture": user["profile_picture"], "info": user["info"]}
     else:

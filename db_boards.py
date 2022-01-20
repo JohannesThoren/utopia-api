@@ -17,15 +17,18 @@ from db_user import auth_user
 
 def search_by_search_term(mongo, search_term):
     db = mongo.db.boards
-    results = db.find({"name": {"$regex" : search_term, '$options': 'i'}}).limit(1000)
+    results = db.find(
+        {"name": {"$regex": search_term, '$options': 'i'}}).limit(1000)
     result_dict = {}
     index = 0
 
     for result in results:
-        result_dict.update({f"{index}": {"name": result["name"], "id": result["id"], "followers": result["followers"]}})
+        result_dict.update({f"{index}": {
+                           "name": result["name"], "id": result["id"], "followers": result["followers"]}})
         index += 1
 
     return result_dict
+
 
 def update_board_helper(mongo, token, db, settings, board):
     user_id, username = auth_user(mongo, token)
@@ -42,6 +45,15 @@ def update_board_settings(mongo, token, settings, board_id):
     board = db.find_one({"id": UUID(board_id)})
     name_check_board = db.find_one({"name": settings["name"]})
     user_id, username = auth_user(mongo, token)
+
+    if len(settings["name"]) > 250:
+        return {"err": "Board name error! Name to large or to small!", "response code": NOT_ALLOWED}
+
+
+    if len(settings["description"]) > 2000:
+        return {"err": "board description to large", "response code": NOT_ALLOWED}
+
+
     if not db.find_one({"name": settings["name"]}):
         return update_board_helper(mongo, token, db, settings, board)
     elif name_check_board["id"] == UUID(board_id):
@@ -141,16 +153,23 @@ def create_board(mongo, name, description, token):
 
     owner_id, owner_username = db_user.auth_user(mongo, token)
 
-    if owner_id:
-        if not db.find_one({"name": name}):
-            board = {"id": uuid4(), "name": name, "description": description,
-                     "owner": owner_id, "created": datetime.now(), "followers": 0}
-            db.insert(board)
-            return {"response code": 200}
+    if len(description) > 2000:
+        return {"err": "board description to large", "response code": NOT_ALLOWED}
+
+
+    if name != "" and len(name) < 250:
+        if owner_id:
+            if not db.find_one({"name": name}):
+                board = {"id": uuid4(), "name": name, "description": description,
+                         "owner": owner_id, "created": datetime.now(), "followers": 0}
+                db.insert(board)
+                return {"response code": 200}
+            else:
+                return {"response code": 401}
         else:
-            return {"response code": 401}
+            return {"response code": 403}
     else:
-        return {"response code": 403}
+        return {"err": "Board name error! Name to large or to small!", "response code": NOT_ALLOWED}
 
 
 def delete_board(mongo, id, token):
@@ -167,4 +186,4 @@ def delete_board(mongo, id, token):
         else:
             return {"response code": 403}
     else:
-        return {"response code": 404, "msg": "could not find any boards with that id!"}
+        return {"response code": 404, "msg": "Could not find any boards with that id!"}
