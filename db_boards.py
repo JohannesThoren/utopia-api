@@ -16,6 +16,7 @@ from db_user import auth_user
 
 
 def search_by_search_term(mongo, search_term):
+    '''searches in the database for boards where the title contains a search_term'''
     db = mongo.db.boards
     results = db.find(
         {"name": {"$regex": search_term, '$options': 'i'}}).limit(1000)
@@ -31,6 +32,7 @@ def search_by_search_term(mongo, search_term):
 
 
 def update_board_helper(mongo, token, db, settings, board):
+    '''same as the update_user_settings_helper, but tweaked for boards'''
     user_id, username = auth_user(mongo, token)
     if user_id == UUID(board["owner"]):
         db.update({"id": board["id"]}, {"$set": {"name": settings["name"],
@@ -41,6 +43,7 @@ def update_board_helper(mongo, token, db, settings, board):
 
 
 def update_board_settings(mongo, token, settings, board_id):
+    '''this function updates the board settings'''
     db = mongo.db.boards
     board = db.find_one({"id": UUID(board_id)})
     name_check_board = db.find_one({"name": settings["name"]})
@@ -63,6 +66,7 @@ def update_board_settings(mongo, token, settings, board_id):
 
 
 def user_follow_board(mongo, token, board_id):
+    '''this board adds the board id to the user following array'''
     db = mongo.db.users
     user = db.find_one({"token": token})
     following = user["following"]
@@ -81,6 +85,7 @@ def user_follow_board(mongo, token, board_id):
 
 
 def user_unfollow_board(mongo, token, board_id):
+     '''removes the board id from the user following array'''
     db = mongo.db.users
     user = db.find_one({"token": token})
     following = user["following"]
@@ -100,6 +105,7 @@ def user_unfollow_board(mongo, token, board_id):
 
 
 def get_all_boards(mongo):
+    '''gets all boards in the database'''
     db = mongo.db.boards
     boards = {}
     index = 0
@@ -112,6 +118,7 @@ def get_all_boards(mongo):
 
 
 def get_n_most_followed_boards(mongo, n):
+    '''gets the n most followed boards'''
     n = int(n)
     db = mongo.db.boards
     boards = db.find({}).sort("followers", pymongo.DESCENDING).limit(n)
@@ -128,6 +135,7 @@ def get_n_most_followed_boards(mongo, n):
 
 
 def get_specific_board_by_id(mongo, id):
+    '''returns a specific board, fetches board by using the board id'''
     db = mongo.db.boards
     try:
         board = db.find_one({"id": UUID(id)})
@@ -140,6 +148,7 @@ def get_specific_board_by_id(mongo, id):
 
 
 def get_specific_board_by_name(mongo, name):
+    '''gets a board with a specific name'''
     db = mongo.db.boards
     board = db.find_one({"name": name})
     if board:
@@ -149,6 +158,7 @@ def get_specific_board_by_name(mongo, name):
 
 
 def create_board(mongo, name, description, token):
+'''creates a new board and returns a response code'''
     db = mongo.db.boards
 
     owner_id, owner_username = db_user.auth_user(mongo, token)
@@ -173,6 +183,7 @@ def create_board(mongo, name, description, token):
 
 
 def delete_board(mongo, id, token):
+    '''deletes a specific board'''
     db = mongo.db.boards
     db_deleted_boards = mongo.db.deleted_boards
     board = db.find_one({"id": UUID(id)})

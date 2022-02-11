@@ -11,10 +11,9 @@ import db_comment
 
 api_board_posts = blueprints.Blueprint('api_board_posts', __name__)
 
-# TODO All routess that should be a post request, should have all data in the body
+# This code should explain itself, this file contains all routes and should not be very interesting!
 
 
-# TODO this should be a post request
 @api_board_posts.route('/board/<board_id>/post/new', methods=['POST'])
 def board_posts_new(board_id):
     body = json.loads(request.get_data().decode("UTF-8"))

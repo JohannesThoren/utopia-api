@@ -15,6 +15,7 @@ import db_user
 
 api_user = blueprints.Blueprint("api_user", __name__)
 
+# This code should explain itself, this file contains all routes and should not be very interesting!
 
 @api_user.route('/user/update', methods=['POST'])
 def update_user():

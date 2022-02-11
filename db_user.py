@@ -17,6 +17,9 @@ settings = toml.load("settings.toml")
 
 
 def update_profile_helper(mongo, token, db, settings):
+    '''
+    this is a helper function for updating the user settings and information.
+    '''
     if auth_user(mongo, token) != False:
         user_id, username = auth_user(mongo, token)
         db.update({"username": username}, {"$set": {
@@ -27,7 +30,9 @@ def update_profile_helper(mongo, token, db, settings):
 
 
 def update_profile_settings(mongo, token, settings):
-
+    '''
+    Updates a user and its "settings". this allows a user to change its username, profile description and some other stuff.
+    '''
     if len(settings["username"]) > 32:
         return {"response code": NOT_ALLOWED, "err": "username to long!"}
 
@@ -61,8 +66,8 @@ def get_token(mongo, username, password):
 
 def create_user(mongo, username, password, email, profile_picture="", info="No Info Yet"):
     '''
-    Checks if a user with the provided name exists and if not then create a user with that name,
-    and returns the username.
+    Checks if a user with the provided name exists and if not then create a user with that name, then
+    return the username of the new user.
     '''
 
     if len(username) > 32:

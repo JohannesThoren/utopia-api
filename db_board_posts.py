@@ -12,6 +12,7 @@ from response_codes import *
 
 
 def new_post(mongo, board_id, token, content, title, flag="TEXT"):
+    '''creates a new post and then returns a response code'''
     db = mongo.db.posts
     db_boards = mongo.db.boards
     content_len = len(content)
@@ -43,6 +44,7 @@ def new_post(mongo, board_id, token, content, title, flag="TEXT"):
 
 
 def get_n_amount_of_latest_posts(mongo, n):
+    '''gets n amout of the global latest posts'''
     n = int(n)
     db = mongo.db.posts
     posts = db.find({})
@@ -62,6 +64,7 @@ def get_n_amount_of_latest_posts(mongo, n):
 
 
 def get_specific_post(mongo, post_id):
+    '''returns a specific post by using a post id'''
     db = mongo.db.posts
     post = db.find_one({"id": UUID(post_id)})
     if post:
@@ -80,6 +83,7 @@ def get_specific_post(mongo, post_id):
 
 
 def get_all_posts(mongo, board_id):
+    '''this gets all posts or 25000 posts depending on the amount of posts'''
     db = mongo.db.posts
     posts = db.find({"board": UUID(board_id)}).limit(25000)
     post_dict = {}
@@ -97,6 +101,7 @@ def get_all_posts(mongo, board_id):
 
 
 def delete_post(mongo, post_id, token):
+    '''deletes a post by using post_id'''
     db = mongo.db.posts
     db_deleted_post = mongo.db.deleted_post
     post = db.find_one({"id": UUID(post_id)})

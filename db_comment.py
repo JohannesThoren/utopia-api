@@ -8,6 +8,9 @@ import response_codes
 
 
 def new_comment(mongo, comment, post_id, token):
+    '''
+    Creates a new comment on a specific post.
+    '''
     db = mongo.db.comments
     user_id, username = auth_user(mongo, token)
 
@@ -24,6 +27,7 @@ def new_comment(mongo, comment, post_id, token):
 
 
 def delete_comment(mongo, comment_id, post_id, token):
+    '''deletes a comment'''
     db = mongo.db.comments
     user_id, username = auth_user(mongo, token)
     comment = db.find({"id": comment_id, "post": post_id})
@@ -39,6 +43,7 @@ def delete_comment(mongo, comment_id, post_id, token):
 
 
 def get_comment(mongo, comment_id):
+    '''fetches a specific comment by its comment id'''
     db = mongo.db.comments
     comment = db.find({"id": comment_id})
     if comment:
@@ -48,6 +53,7 @@ def get_comment(mongo, comment_id):
 
 
 def get_comments_for_post(mongo, post_id):
+    '''gets all comments for a specific post'''
     db = mongo.db.comments
     comments = db.find({"post": post_id})
     index = 0

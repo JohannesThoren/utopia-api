@@ -3,7 +3,6 @@ from flask_cors import CORS
 from flask_pymongo import PyMongo
 from werkzeug.datastructures import *
 
-
 from routes_board_posts import api_board_posts
 from routes_boards import api_boards
 from routes_user import api_user
